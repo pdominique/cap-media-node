@@ -1,0 +1,29 @@
+{
+    "name": "cap-media-node-srv",
+    "description": "Generated from ../package.json, do not change!",
+    "version": "1.0.0",
+    "dependencies": {
+        "@sap/cds": "^3.18.1",
+        "express": "^4.17.1",
+        "hdb": "^0.17.1"
+    },
+    "engines": {
+        "node": "^8.9",
+        "npm": "^6"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "postinstall": "npm dedupe && node .build.js",
+        "start": "node ./node_modules/@sap/cds/bin/cds.js serve gen/csn.json",
+        "watch": "nodemon -w . -i node_modules/**,.git/** -e cds -x npm run build"
+    },
+    "private": true,
+    "cds": {
+        "requires": {
+            "db": {
+                "kind": "hana",
+                "model": "gen/csn.json"
+            }
+        }
+    }
+}
