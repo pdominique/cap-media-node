@@ -1,5 +1,5 @@
 ID: cap-media-node
-_schema-version: "2.1"
+_schema-version: '2.1'
 version: 0.0.1
 modules:
   - name: cap-media-node-db
@@ -19,11 +19,18 @@ modules:
     provides:
       - name: srv_api
         properties:
-          url: ${default-url}
+          url: '${default-url}'
     requires:
       - name: cap-media-node-db-hdi-container
+      - name: s3-pictures
 resources:
   - name: cap-media-node-db-hdi-container
     type: com.sap.xs.hdi-container
     properties:
-      hdi-container-name: ${service-name}
+      hdi-container-name: '${service-name}'
+  - name: s3-pictures
+    type: objectstore
+    parameters:
+      service: objectstore
+      service-plan: s3-standard
+      service-name: s3-pictures
