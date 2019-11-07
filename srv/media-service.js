@@ -1,3 +1,8 @@
+const cds = require('@sap/cds')
+const {
+	Pictures
+} = cds.entities
+
 module.exports = srv => {
 
 	const vcap_services = JSON.parse(process.env.VCAP_SERVICES)
@@ -20,16 +25,28 @@ module.exports = srv => {
 		s3ForcePathStyle: true
 	})
 
-	srv.on('UPDATE', 'Pictures', async req => {
-		const params = {
-			Bucket: vcap_services.objectstore[0].credentials.bucket,
-			Key: req.data.ID,
-			Body: req.data.content,
-			ContentType: "image/png"
-		};
-		s3.upload(params, function (err, data) {
-			console.log(err, data)
-		})
+	srv.on('UPDATE', 'Pictures', async (req, next) => {
+		if (req.data.content) {
+			const contentType = req._.req.headers['content-type']
+			const params = {
+				Bucket: vcap_services.objectstore[0].credentials.bucket,
+				Key: req.data.ID,
+				Body: req.data.content,
+				ContentType: contentType
+			};
+			s3.upload(params, function (err, data) {
+				console.log(err, data)
+				const tx = cds
+				// update mediaType in DB
+				return tx.run(UPDATE(Pictures).set({
+					mediaType: contentType
+				}).where({
+					ID: req.data.ID
+				}))
+			})
+		} else {
+			return next()
+		}
 	})
 
 	srv.on('READ', 'Pictures', (req, next) => {

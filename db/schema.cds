@@ -2,6 +2,8 @@ namespace media;
 
 entity Pictures {
   key ID : UUID;
-  @Core.MediaType: 'image/png'
+  @Core.MediaType: mediaType
   content : LargeBinary;
+  @Core.IsMediaType: true
+  mediaType : String;
 }
