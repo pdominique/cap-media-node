@@ -2,15 +2,22 @@ module.exports = srv => {
 
 	const vcap_services = JSON.parse(process.env.VCAP_SERVICES)
 	const AWS = require('aws-sdk')
+	const useLocal = process.env.NODE_ENV !== 'production'
+
 	const credentials = new AWS.Credentials(
 		vcap_services.objectstore[0].credentials.access_key_id,
 		vcap_services.objectstore[0].credentials.secret_access_key)
 	AWS.config.update({
 		region: vcap_services.objectstore[0].credentials.region,
-		credentials: credentials
 	})
 	const s3 = new AWS.S3({
-		apiVersion: '2006-03-01'
+		credentials: credentials,
+		apiVersion: '2006-03-01',
+		/*
+		https://dev.to/goodidea/how-to-fake-aws-locally-with-localstack-27me
+		*/
+		endpoint: useLocal ? 'http://localhost:4572' : undefined,
+		s3ForcePathStyle: true
 	})
 
 	srv.on('UPDATE', 'Pictures', async req => {
